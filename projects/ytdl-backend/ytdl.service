@@ -1,0 +1,14 @@
+[Unit]
+Description=YTDL Flask Backend
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/var/www/ytdl-backend
+ExecStart=/var/www/ytdl-backend/venv/bin/python app.py
+Restart=always
+RestartSec=5
+Environment=FLASK_ENV=production
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YTDL — YouTube Downloader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --black:#060606;--panel:#0d0d0d;--border:#1e1e1e;--dim:#2a2a2a;
+  --mid:#444;--muted:#666;--text:#c8c4b8;--white:#f0ece0;
+  --acid:#c8ff00;--red:#ff2200;--green:#00ff88;
+}
+html,body{width:100%;min-height:100vh;background:var(--black);font-family:'JetBrains Mono',monospace;color:var(--text);cursor:crosshair;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");opacity:0.4;mix-blend-mode:overlay;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:998;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;border-bottom:1px solid var(--border);background:rgba(6,6,6,0.92);backdrop-filter:blur(10px);display:flex;align-items:center;padding:0 5%;gap:0;}
+.tb-dot{width:10px;height:10px;border-radius:50%;margin-right:6px;}
+.tb-dot.r{background:#ff5f57;}.tb-dot.y{background:#febc2e;}.tb-dot.g{background:#28c840;}
+#tb-title{font-size:0.65rem;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;margin-left:16px;flex:1;}
+#back{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+#back:hover{color:var(--acid);}
+#wrap{min-height:100vh;padding:80px 5% 80px;max-width:900px;margin:0 auto;}
+#header{margin-bottom:60px;padding-bottom:40px;border-bottom:1px solid var(--border);}
+.cmd-line{font-size:0.7rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.cmd-line::before{content:'$';color:var(--acid);}
+#page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,10vw,8rem);line-height:0.9;letter-spacing:0.02em;color:var(--white);margin-bottom:16px;}
+#page-title span{color:var(--red);}
+#page-sub{font-size:0.75rem;color:var(--muted);letter-spacing:0.05em;line-height:1.8;max-width:500px;}
+.term-card{background:var(--panel);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:24px;}
+.term-header{background:var(--dim);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.th-dot{width:9px;height:9px;border-radius:50%;}
+.th-dot.r{background:rgba(255,95,87,0.7);}.th-dot.y{background:rgba(254,188,46,0.7);}.th-dot.g{background:rgba(40,200,64,0.7);}
+.term-title{font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-left:6px;}
+.term-body{padding:24px;}
+#url-form{display:flex;flex-direction:column;gap:14px;}
+.input-row{display:flex;align-items:center;border:1px solid var(--border);background:#080808;border-radius:3px;overflow:hidden;transition:border-color 0.2s;}
+.input-row:focus-within{border-color:var(--acid);}
+.input-prompt{padding:0 14px;font-size:0.75rem;color:var(--acid);white-space:nowrap;border-right:1px solid var(--border);height:46px;display:flex;align-items:center;flex-shrink:0;}
+#url-input{flex:1;background:transparent;border:none;outline:none;padding:0 16px;height:46px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--white);caret-color:var(--acid);}
+#url-input::placeholder{color:var(--dim);}
+.label-row{font-size:0.6rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
+.format-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.fmt-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;padding:10px 0;border-radius:3px;cursor:crosshair;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.fmt-btn .fmt-icon{font-size:1rem;}
+.fmt-btn:hover{border-color:var(--mid);color:var(--text);}
+.fmt-btn.active{border-color:var(--acid);color:var(--acid);background:rgba(200,255,0,0.04);}
+.quality-row{display:flex;gap:8px;flex-wrap:wrap;}
+.q-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;padding:8px 16px;border-radius:3px;cursor:crosshair;transition:all 0.15s;}
+.q-btn:hover{border-color:var(--mid);color:var(--text);}
+.q-btn.active{border-color:var(--acid);color:var(--acid);background:rgba(200,255,0,0.04);}
+#dl-btn{background:var(--acid);border:none;color:var(--black);font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;padding:15px 30px;border-radius:3px;cursor:crosshair;transition:all 0.2s;width:100%;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:10px;}
+#dl-btn:hover{background:var(--white);transform:translateY(-2px);}
+#dl-btn.loading{background:var(--dim);color:var(--muted);pointer-events:none;}
+#log-wrap{display:none;}
+#log{font-size:0.72rem;line-height:2;color:var(--muted);min-height:120px;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--dim) transparent;}
+.log-line{display:flex;gap:10px;align-items:baseline;}
+.log-ts{color:var(--dim);flex-shrink:0;font-size:0.6rem;}
+.log-ok{color:var(--green);}.log-err{color:var(--red);}.log-info{color:var(--acid);}.log-txt{color:var(--text);}
+#result-wrap{display:none;margin-top:24px;}
+#result-card{background:var(--panel);border:1px solid var(--acid);border-radius:4px;padding:20px 24px;display:flex;gap:20px;align-items:center;}
+#result-thumb{width:120px;height:68px;object-fit:cover;border-radius:3px;flex-shrink:0;border:1px solid var(--dim);background:var(--dim);}
+#result-info{flex:1;min-width:0;}
+#result-title{font-size:0.8rem;font-weight:700;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+#result-meta{font-size:0.6rem;color:var(--muted);letter-spacing:0.05em;line-height:1.8;}
+#result-dl{background:var(--acid);color:var(--black);font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;border:none;padding:10px 18px;border-radius:3px;cursor:crosshair;transition:all 0.2s;flex-shrink:0;}
+#result-dl:hover{background:var(--white);}
+#result-dl.loading{background:var(--dim);color:var(--muted);pointer-events:none;}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:24px;}
+.info-cell{background:var(--panel);padding:20px 20px;}
+.ic-label{font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.ic-value{font-size:0.85rem;color:var(--white);}
+.ic-value.accent{color:var(--acid);}
+#footer{margin-top:80px;padding-top:30px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);}
+@media(max-width:600px){.format-row{grid-template-columns:repeat(2,1fr);}#result-card{flex-direction:column;align-items:flex-start;}#result-thumb{width:100%;height:140px;}#result-dl{width:100%;text-align:center;}#footer{flex-direction:column;gap:10px;text-align:center;}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="tb-dot r"></div><div class="tb-dot y"></div><div class="tb-dot g"></div>
+  <div id="tb-title">ytdl.sh — YouTube Downloader v1.0</div>
+  <a href="../index.html" id="back">← portfolio</a>
+</div>
+
+<div id="wrap">
+  <div id="header">
+    <div class="cmd-line">ytdl --help</div>
+    <div id="page-title">YT<span>DL</span></div>
+    <p id="page-sub">Download video dan audio dari YouTube dengan mudah.<br>Pilih format, quality, lalu download. Simpel.</p>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-cell"><div class="ic-label">Built with</div><div class="ic-value accent">yt-dlp + Flask</div></div>
+    <div class="info-cell"><div class="ic-label">Supported</div><div class="ic-value">YouTube, Shorts</div></div>
+    <div class="info-cell"><div class="ic-label">Output</div><div class="ic-value">MP4 / MP3 / WEBM / M4A</div></div>
+    <div class="info-cell"><div class="ic-label">Max Quality</div><div class="ic-value accent">4K / 320kbps</div></div>
+  </div>
+
+  <div class="term-card">
+    <div class="term-header">
+      <div class="th-dot r"></div><div class="th-dot y"></div><div class="th-dot g"></div>
+      <span class="term-title">downloader</span>
+    </div>
+    <div class="term-body">
+      <div id="url-form">
+        <div>
+          <div class="label-row">YouTube URL</div>
+          <div class="input-row">
+            <div class="input-prompt">url</div>
+            <input type="text" id="url-input" placeholder="https://www.youtube.com/watch?v=...">
+          </div>
+        </div>
+        <div>
+          <div class="label-row">Format</div>
+          <div class="format-row">
+            <button class="fmt-btn active" data-fmt="mp4"><span class="fmt-icon">🎬</span>MP4</button>
+            <button class="fmt-btn" data-fmt="mp3"><span class="fmt-icon">🎵</span>MP3</button>
+            <button class="fmt-btn" data-fmt="webm"><span class="fmt-icon">📦</span>WEBM</button>
+            <button class="fmt-btn" data-fmt="m4a"><span class="fmt-icon">🎧</span>M4A</button>
+          </div>
+        </div>
+        <div id="quality-section">
+          <div class="label-row">Quality</div>
+          <div class="quality-row" id="quality-row">
+            <button class="q-btn active" data-q="best">Best</button>
+            <button class="q-btn" data-q="1080p">1080p</button>
+            <button class="q-btn" data-q="720p">720p</button>
+            <button class="q-btn" data-q="480p">480p</button>
+            <button class="q-btn" data-q="360p">360p</button>
+          </div>
+        </div>
+        <button id="dl-btn"><span id="dl-btn-text">▼ &nbsp;Download</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="term-card" id="log-wrap">
+    <div class="term-header">
+      <div class="th-dot r"></div><div class="th-dot y"></div><div class="th-dot g"></div>
+      <span class="term-title">output log</span>
+    </div>
+    <div class="term-body"><div id="log"></div></div>
+  </div>
+
+  <div id="result-wrap">
+    <div class="term-card">
+      <div class="term-header">
+        <div class="th-dot r"></div><div class="th-dot y"></div><div class="th-dot g"></div>
+        <span class="term-title">ready to download</span>
+      </div>
+      <div class="term-body">
+        <div id="result-card">
+          <img id="result-thumb" src="" alt="thumbnail">
+          <div id="result-info">
+            <div id="result-title">—</div>
+            <div id="result-meta">—</div>
+          </div>
+          <button id="result-dl">↓ Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer">
+    <span>YTDL v1.0 — by Rama Adi Santoso</span>
+    <span>ihir.my.id</span>
+  </div>
+</div>
+
+<script>
+// ——— CONFIG ———
+const API = "https://api.ihir.my.id";
+
+// ——— FORMAT BUTTONS ———
+document.querySelectorAll('.fmt-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const fmt = btn.dataset.fmt;
+    const qrow = document.getElementById('quality-row');
+    if(fmt==='mp3'||fmt==='m4a'){
+      qrow.innerHTML=`
+        <button class="q-btn active" data-q="320k">320k</button>
+        <button class="q-btn" data-q="192k">192k</button>
+        <button class="q-btn" data-q="128k">128k</button>
+        <button class="q-btn" data-q="96k">96k</button>`;
+    }else{
+      qrow.innerHTML=`
+        <button class="q-btn active" data-q="best">Best</button>
+        <button class="q-btn" data-q="1080p">1080p</button>
+        <button class="q-btn" data-q="720p">720p</button>
+        <button class="q-btn" data-q="480p">480p</button>
+        <button class="q-btn" data-q="360p">360p</button>`;
+    }
+    attachQ();
+  });
+});
+
+function attachQ(){
+  document.querySelectorAll('.q-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.q-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+attachQ();
+
+// ——— LOG ———
+const logEl  = document.getElementById('log');
+const logWrap= document.getElementById('log-wrap');
+
+function addLog(type, text){
+  logWrap.style.display='block';
+  const ts = new Date().toTimeString().slice(0,8);
+  const prefix = {ok:'[OK]  ', err:'[ERR] ', info:'[-->] '}[type]||'[···] ';
+  const cls    = {ok:'log-ok', err:'log-err', info:'log-info'}[type]||'log-txt';
+  const line   = document.createElement('div');
+  line.className='log-line';
+  line.innerHTML=`<span class="log-ts">${ts}</span><span class="${cls}">${prefix}</span><span class="log-txt">${text}</span>`;
+  logEl.appendChild(line);
+  logEl.scrollTop=logEl.scrollHeight;
+}
+function clearLog(){ logEl.innerHTML=''; }
+
+// ——— MAIN DOWNLOAD ———
+document.getElementById('dl-btn').addEventListener('click', async()=>{
+  const url = document.getElementById('url-input').value.trim();
+  if(!url){
+    document.querySelector('.input-row').style.borderColor='var(--red)';
+    setTimeout(()=>document.querySelector('.input-row').style.borderColor='',1000);
+    return;
+  }
+
+  const ytRe = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)[\w\-]+/;
+  if(!ytRe.test(url)){
+    clearLog(); addLog('err','URL tidak valid. Harus YouTube link.');
+    return;
+  }
+
+  const fmt = document.querySelector('.fmt-btn.active').dataset.fmt;
+  const q   = document.querySelector('.q-btn.active').dataset.q;
+  const btn = document.getElementById('dl-btn');
+  const btnText = document.getElementById('dl-btn-text');
+
+  btn.classList.add('loading');
+  btnText.textContent='processing...';
+  document.getElementById('result-wrap').style.display='none';
+  clearLog();
+
+  // 1. Fetch metadata
+  addLog('info', `fetching metadata...`);
+  try{
+    const infoRes = await fetch(`${API}/info?url=${encodeURIComponent(url)}`);
+    const info    = await infoRes.json();
+
+    if(info.error){ addLog('err', info.error); btn.classList.remove('loading'); btnText.textContent='▼ \u00a0Download'; return; }
+
+    addLog('ok',   `title: ${info.title}`);
+    addLog('ok',   `uploader: ${info.uploader}`);
+    addLog('txt',  `duration: ${fmtDur(info.duration)}`);
+    addLog('info', `format: ${fmt.toUpperCase()} @ ${q}`);
+    addLog('txt',  `starting download...`);
+
+    // Show info card
+    document.getElementById('result-thumb').src = info.thumbnail;
+    document.getElementById('result-title').textContent = info.title;
+    document.getElementById('result-meta').innerHTML =
+      `${info.uploader} &nbsp;·&nbsp; ${fmtDur(info.duration)} &nbsp;·&nbsp; ${fmt.toUpperCase()} ${q}`;
+    document.getElementById('result-wrap').style.display='block';
+
+    // 2. Trigger download
+    const dlBtn = document.getElementById('result-dl');
+    dlBtn.classList.remove('loading');
+    dlBtn.textContent='↓ Save';
+    dlBtn.onclick = async()=>{
+      dlBtn.classList.add('loading');
+      dlBtn.textContent='downloading...';
+      addLog('info','requesting file from server...');
+      try{
+        const res = await fetch(`${API}/download`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({url, format:fmt, quality:q})
+        });
+        if(!res.ok){
+          const err=await res.json();
+          addLog('err', err.error||'Server error');
+          dlBtn.classList.remove('loading');
+          dlBtn.textContent='↓ Save';
+          return;
+        }
+        // Stream blob ke user
+        const blob = await res.blob();
+        const cd   = res.headers.get('Content-Disposition')||'';
+        const match= cd.match(/filename="?([^"]+)"?/);
+        const fname= match ? match[1] : `download.${fmt}`;
+        const a    = document.createElement('a');
+        a.href     = URL.createObjectURL(blob);
+        a.download = fname;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        addLog('ok','file saved!');
+      }catch(e){
+        addLog('err','Network error: '+e.message);
+      }
+      dlBtn.classList.remove('loading');
+      dlBtn.textContent='↓ Save';
+    };
+
+  }catch(e){
+    addLog('err','Tidak bisa konek ke server: '+e.message);
+    addLog('txt','Pastikan backend berjalan di server.');
+  }
+
+  btn.classList.remove('loading');
+  btnText.textContent='▼ \u00a0Download';
+});
+
+function fmtDur(s){
+  if(!s) return '—';
+  const m=Math.floor(s/60), sec=Math.floor(s%60).toString().padStart(2,'0');
+  return `${m}:${sec}`;
+}
+</script>
+</body>
+</html>

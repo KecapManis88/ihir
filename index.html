@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHIR — Portfolio</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --black: #080808;
+  --white: #f0ece0;
+  --cream: #e8e0cc;
+  --acid: #c8ff00;
+  --red: #ff2200;
+  --grey: #1a1a1a;
+  --mid: #3a3a3a;
+}
+
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--black);
+  color: var(--white);
+  cursor: crosshair;
+  overflow-x: hidden;
+}
+
+/* GRAIN OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.35;
+}
+
+/* ——— NAV ——— */
+nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  padding: 20px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  mix-blend-mode: normal;
+  transition: background 0.4s;
+}
+
+nav.scrolled {
+  background: rgba(8,8,8,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--mid);
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 0.1em;
+  color: var(--acid);
+  text-shadow: 3px 3px 0 var(--red);
+  animation: logoShake 8s infinite;
+}
+
+@keyframes logoShake {
+  0%, 90%, 100% { text-shadow: 3px 3px 0 var(--red); }
+  92% { text-shadow: -3px 3px 0 var(--red); }
+  94% { text-shadow: 3px -3px 0 var(--acid); }
+  96% { text-shadow: -3px -3px 0 var(--red); }
+  98% { text-shadow: 3px 3px 0 var(--red); }
+}
+
+nav ul {
+  display: flex;
+  gap: 40px;
+  list-style: none;
+}
+
+nav ul li a {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cream);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.2s;
+}
+
+nav ul li a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 2px;
+  background: var(--acid);
+  transition: width 0.3s;
+}
+
+nav ul li a:hover { color: var(--acid); }
+nav ul li a:hover::after { width: 100%; }
+
+/* ——— HERO ——— */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 6% 80px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--acid);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(5rem, 9vw, 9rem);
+  line-height: 0.9;
+  color: var(--white);
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+
+.hero-name em {
+  color: var(--acid);
+  font-style: normal;
+  display: block;
+  -webkit-text-stroke: 2px var(--acid);
+  color: transparent;
+}
+
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  padding: 6px 14px;
+  border: 1px solid var(--mid);
+  border-radius: 2px;
+  color: #888;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.tag:hover {
+  border-color: var(--acid);
+  color: var(--acid);
+  background: rgba(200,255,0,0.05);
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--acid);
+  color: var(--black);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 16px 32px;
+  border-radius: 2px;
+  transition: all 0.2s;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+  width: fit-content;
+}
+
+.hero-cta:hover {
+  background: var(--white);
+  transform: translate(-4px, -4px);
+  box-shadow: 4px 4px 0 var(--acid);
+}
+
+.hero-cta::after { content: '→'; }
+
+.hero-right {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-right::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--black) 0%, transparent 40%);
+  z-index: 1;
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  filter: grayscale(30%) contrast(1.1);
+  display: block;
+}
+
+.hero-number {
+  position: absolute;
+  bottom: 40px;
+  right: 6%;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15rem;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.06);
+  line-height: 1;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 6%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: #555;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeUp 1s 1.2s forwards;
+}
+
+.scroll-line {
+  width: 40px;
+  height: 1px;
+  background: #555;
+  animation: lineGrow 2s 1.5s infinite;
+}
+
+@keyframes lineGrow {
+  0%, 100% { width: 40px; opacity: 1; }
+  50% { width: 80px; opacity: 0.3; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ——— MARQUEE ——— */
+.marquee-section {
+  background: var(--acid);
+  padding: 14px 0;
+  overflow: hidden;
+  border-top: 2px solid var(--black);
+  border-bottom: 2px solid var(--black);
+}
+
+.marquee-track {
+  display: flex;
+  gap: 0;
+  animation: marquee 18s linear infinite;
+  width: max-content;
+}
+
+.marquee-track span {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.15em;
+  color: var(--black);
+  padding: 0 30px;
+  white-space: nowrap;
+}
+
+.marquee-track span.sep {
+  color: var(--red);
+  padding: 0 5px;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ——— ABOUT ——— */
+.about {
+  padding: 140px 6%;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 80px;
+  align-items: start;
+  border-bottom: 1px solid var(--mid);
+}
+
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--acid);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  margin-top: 8px;
+}
+
+.about-content {}
+
+.about-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 6vw, 6rem);
+  line-height: 0.95;
+  margin-bottom: 40px;
+  color: var(--white);
+}
+
+.about-heading span {
+  color: var(--acid);
+}
+
+.about-text {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: #999;
+  max-width: 620px;
+  margin-bottom: 50px;
+}
+
+.about-text strong {
+  color: var(--white);
+  font-weight: 700;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--mid);
+  border: 1px solid var(--mid);
+  max-width: 620px;
+}
+
+.skill-item {
+  background: var(--grey);
+  padding: 16px 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  color: #777;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.skill-item:hover {
+  background: var(--acid);
+  color: var(--black);
+}
+
+/* ——— PROJECTS ——— */
+.projects {
+  padding: 140px 6%;
+  border-bottom: 1px solid var(--mid);
+}
+
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 80px;
+  border-bottom: 1px solid var(--mid);
+  padding-bottom: 30px;
+}
+
+.projects-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 7vw, 7rem);
+  color: var(--white);
+  line-height: 1;
+}
+
+.project-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: #555;
+  letter-spacing: 0.2em;
+  padding-bottom: 10px;
+}
+
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--mid);
+  border: 1px solid var(--mid);
+}
+
+.project-item {
+  background: var(--grey);
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 40px;
+  padding: 30px 30px;
+  text-decoration: none;
+  color: var(--white);
+  transition: all 0.25s;
+  border-left: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--acid);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  z-index: 0;
+}
+
+.project-item:hover::before { transform: translateX(0); }
+
+.project-item:hover {
+  color: var(--black);
+  border-left-color: var(--black);
+}
+
+.project-item > * { position: relative; z-index: 1; }
+
+.project-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  color: var(--mid);
+  transition: color 0.25s;
+  line-height: 1;
+}
+
+.project-item:hover .project-num { color: rgba(0,0,0,0.3); }
+
+.project-info {}
+
+.project-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.project-desc {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+  color: #666;
+  letter-spacing: 0.05em;
+  transition: color 0.25s;
+}
+
+.project-item:hover .project-desc { color: rgba(0,0,0,0.6); }
+
+.project-arrow {
+  font-size: 1.5rem;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.25s;
+}
+
+.project-item:hover .project-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.project-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  padding: 4px 10px;
+  border: 1px solid currentColor;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+/* ——— CONTACT ——— */
+.contact {
+  padding: 140px 6%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.contact-left {}
+
+.contact-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 7vw, 7rem);
+  line-height: 0.9;
+  margin-bottom: 30px;
+}
+
+.contact-heading em {
+  color: var(--acid);
+  font-style: normal;
+  display: block;
+}
+
+.contact-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: #666;
+  line-height: 2;
+  letter-spacing: 0.05em;
+  max-width: 380px;
+}
+
+.contact-right {}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--mid);
+  color: var(--white);
+  text-decoration: none;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.contact-link::after {
+  content: '↗';
+  margin-left: auto;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.2s;
+}
+
+.contact-link:hover {
+  color: var(--acid);
+  padding-left: 10px;
+}
+
+.contact-link:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.contact-icon {
+  font-size: 0.8rem;
+  opacity: 0.4;
+  font-family: 'Space Mono', monospace;
+  min-width: 60px;
+  letter-spacing: 0.05em;
+}
+
+/* ——— FOOTER ——— */
+footer {
+  border-top: 1px solid var(--mid);
+  padding: 30px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  color: var(--acid);
+  letter-spacing: 0.1em;
+}
+
+.footer-copy {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: #444;
+  letter-spacing: 0.15em;
+}
+
+/* ——— MOBILE ——— */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-right { height: 50vh; }
+  .hero-right::before { background: linear-gradient(to bottom, transparent 60%, var(--black)); }
+  .hero-left { padding-top: 100px; }
+  .hero-name { font-size: 4.5rem; }
+  .hero-number { font-size: 8rem; }
+  .about { grid-template-columns: 1fr; gap: 30px; }
+  .section-label { writing-mode: horizontal-tb; transform: none; margin-bottom: 10px; }
+  .skills-grid { grid-template-columns: repeat(2, 1fr); }
+  .contact { grid-template-columns: 1fr; }
+  .projects-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .project-item { grid-template-columns: 50px 1fr auto; gap: 20px; }
+  footer { flex-direction: column; gap: 15px; text-align: center; }
+  nav ul { gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="logo">IHIR</div>
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header>
+<section class="hero" id="home">
+  <div class="hero-left">
+    <p class="hero-eyebrow">// Portfolio 2026</p>
+    <h1 class="hero-name">
+      Rama Adi<br>
+      <em>Santoso</em>
+    </h1>
+    <div class="hero-tags">
+      <span class="tag">Sistem Informasi</span>
+      <span class="tag">Linux</span>
+      <span class="tag">Web Dev</span>
+      <span class="tag">Network</span>
+      <span class="tag">Cybersecurity</span>
+    </div>
+    <a href="#projects" class="hero-cta">View Projects</a>
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      Scroll
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <img src="images/syre.jpeg" class="hero-img" alt="Rama Adi Santoso">
+    <div class="hero-number">01</div>
+  </div>
+</section>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span>Web Development</span><span class="sep">✦</span>
+    <span>Linux Sysadmin</span><span class="sep">✦</span>
+    <span>Network Engineering</span><span class="sep">✦</span>
+    <span>Database Management</span><span class="sep">✦</span>
+    <span>Cybersecurity</span><span class="sep">✦</span>
+    <span>PHP & MySQL</span><span class="sep">✦</span>
+    <span>Sistem Informasi</span><span class="sep">✦</span>
+    <!-- duplicate for loop -->
+    <span>Web Development</span><span class="sep">✦</span>
+    <span>Linux Sysadmin</span><span class="sep">✦</span>
+    <span>Network Engineering</span><span class="sep">✦</span>
+    <span>Database Management</span><span class="sep">✦</span>
+    <span>Cybersecurity</span><span class="sep">✦</span>
+    <span>PHP & MySQL</span><span class="sep">✦</span>
+    <span>Sistem Informasi</span><span class="sep">✦</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="section-label">About</div>
+  <div class="about-content">
+    <h2 class="about-heading">Who<br>Am <span>I?</span></h2>
+    <p class="about-text">
+      Gue <strong>Rama Adi Santoso</strong> — mahasiswa Sistem Informasi di <strong>Universitas Teknologi Yogyakarta</strong> yang lagi ngejar dunia IT dari berbagai arah.
+      <br><br>
+      Dari analisis sistem, pemrograman, sampai pengelolaan database — gue sering latihan pakai <strong>PHP, MySQL</strong>, dan explore hal-hal tentang <strong>Linux</strong>. Sekarang masih terus belajar buat bisa lebih siap di bidang web development dan pengembangan sistem.
+    </p>
+    <div class="skills-grid">
+      <div class="skill-item">PHP</div>
+      <div class="skill-item">MySQL</div>
+      <div class="skill-item">Linux</div>
+      <div class="skill-item">HTML/CSS</div>
+      <div class="skill-item">JavaScript</div>
+      <div class="skill-item">Networking</div>
+      <div class="skill-item">Debian</div>
+      <div class="skill-item">Sys. Analysis</div>
+      <div class="skill-item">Security</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="projects-header">
+    <h2 class="projects-heading">Projects</h2>
+    <span class="project-count">03 Works</span>
+  </div>
+
+  <div class="project-list">
+    <a href="projects/oasis.html" class="project-item">
+      <span class="project-num">01</span>
+      <div class="project-info">
+        <span class="project-title">🎵 Oasis Experience</span>
+        <span class="project-desc">Interactive karaoke visualizer · synchronized lyrics · aesthetic music player</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </a>
+
+    <a href="projects/ytdl.html" class="project-item">
+      <span class="project-num">02</span>
+      <div class="project-info">
+        <span class="project-title">📥 YouTube Downloader</span>
+        <span class="project-desc">Download video & audio dari YouTube · MP4 / MP3 / WEBM · yt-dlp powered</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </a>
+
+    <div class="project-item" style="opacity:0.5; cursor:not-allowed;">
+      <span class="project-num">03</span>
+      <div class="project-info">
+        <span class="project-title">💻 Linux Server</span>
+        <span class="project-desc">Personal Debian server · networking practice · self-hosted</span>
+      </div>
+      <span class="project-badge">Under Construction</span>
+    </div>
+
+    <div class="project-item" style="opacity:0.5; cursor:not-allowed;">
+      <span class="project-num">04</span>
+      <div class="project-info">
+        <span class="project-title">🌐 POS System</span>
+        <span class="project-desc">Web-based point of sale system · for small businesses</span>
+      </div>
+      <span class="project-badge">Coming Soon</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-left">
+    <h2 class="contact-heading">Let's<br><em>Connect</em></h2>
+    <p class="contact-sub">
+      Open for collaboration, internship, or just ngobrol soal tech, Linux, atau Oasis.
+    </p>
+  </div>
+  <div class="contact-right">
+    <a href="mailto:ramaadisantoso588@gmail.com" class="contact-link">
+      <span class="contact-icon">EMAIL</span>
+      ramaadisantoso588@gmail.com
+    </a>
+    <a href="https://github.com" class="contact-link" target="_blank">
+      <span class="contact-icon">GITHUB</span>
+      github.com/ihir
+    </a>
+    <a href="#" class="contact-link">
+      <span class="contact-icon">DOMAIN</span>
+      ihir.my.id
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">IHIR</span>
+  <span class="footer-copy">© 2026 Rama Adi Santoso — All rights reserved</span>
+</footer>
+
+<script>
+// Nav scroll effect
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// Intersection Observer for section reveals
+const reveals = document.querySelectorAll('.about, .projects, .contact');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+reveals.forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(40px)';
+  el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+  obs.observe(el);
+});
+</script>
+
+</body>
+</html>

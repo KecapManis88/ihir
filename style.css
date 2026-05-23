@@ -1,0 +1,251 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:#0b0b0f;
+    color:white;
+}
+
+/* NAVBAR */
+
+nav{
+    position:fixed;
+
+    width:100%;
+
+    padding:25px 10%;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    background:rgba(0,0,0,0.3);
+
+    backdrop-filter:blur(10px);
+
+    z-index:1000;
+}
+
+.logo{
+    font-size:32px;
+    font-weight:700;
+    color:cyan;
+}
+
+nav ul{
+    display:flex;
+    gap:30px;
+    list-style:none;
+}
+
+nav ul li a{
+    color:white;
+    text-decoration:none;
+    transition:0.3s;
+}
+
+nav ul li a:hover{
+    color:cyan;
+}
+
+/* HERO */
+
+.hero{
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:0 10%;
+
+    gap:70px;
+
+    background:
+    linear-gradient(
+    rgba(80,20,140,0.7),
+    rgba(10,10,20,0.95)),
+
+    url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1400');
+
+    background-size:cover;
+    background-position:center;
+}
+
+.hero-text{
+    max-width:600px;
+}
+
+.hero-text h1{
+    font-size:68px;
+    line-height:1.2;
+}
+
+.hero-text h1 span {
+    background: linear-gradient(45deg, #00f2fe, #4facfe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none; /* Hapus shadow bawaan agar gradasi bersih */
+}
+
+.hero-text p{
+    margin-top:20px;
+
+    color:#ccc;
+
+    line-height:1.8;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 35px;
+    background: linear-gradient(45deg, #00f2fe, #4facfe);
+    color: #0b0b0f;
+    padding: 14px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 242, 254, 0.4);
+}
+
+.hero-image img{
+    width:340px;
+    height:340px;
+
+    object-fit:cover;
+
+    border-radius:50%;
+
+    border:8px solid rgba(255,255,255,0.15);
+
+    box-shadow:
+    0 0 40px rgba(0,255,255,0.3);
+}
+
+/* SECTIONS */
+
+section{
+    padding:120px 10%;
+}
+
+section h2{
+    text-align:center;
+
+    font-size:50px;
+
+    margin-bottom:40px;
+}
+
+.about p,
+.contact p{
+    max-width:800px;
+
+    margin:auto;
+
+    text-align:center;
+
+    color:#bbb;
+
+    line-height:2;
+}
+
+/* PROJECTS */
+
+.project-grid{
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+    gap:30px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 20px; /* Sedikit lebih kotak agar tegas */
+    backdrop-filter: blur(12px);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); /* Efek smooth */
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 242, 254, 0.4);
+    box-shadow: 0 15px 30px rgba(0, 242, 254, 0.1);
+}
+
+.card h3{
+    margin-bottom:15px;
+
+    font-size:26px;
+}
+
+.card p{
+    color:#bbb;
+
+    line-height:1.8;
+}
+
+.card a{
+    display:inline-block;
+
+    margin-top:20px;
+
+    color:cyan;
+
+    text-decoration:none;
+}
+
+/* FOOTER */
+
+footer{
+    text-align:center;
+
+    padding:40px;
+
+    color:#666;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+.hero{
+    flex-direction:column;
+    text-align:center;
+}
+
+.hero-text h1{
+    font-size:48px;
+}
+
+.hero-image img{
+    width:240px;
+    height:240px;
+}
+
+nav{
+    flex-direction:column;
+    gap:20px;
+}
+
+nav ul{
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+}
